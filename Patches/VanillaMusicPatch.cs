@@ -12,7 +12,6 @@ public class VanillaMusicPatch
     private static bool VanillaMusicRemovePatch(SoundManager __instance)
     {
         CustomLevelMusic CustomMusicObject = GameObject.FindObjectOfType<CustomLevelMusic>();
-        LevelMusicLib.Logger.LogInfo(__instance.musicSource.name);
         if (CustomMusicObject != null)
         {
             LevelMusicLib.Logger.LogInfo("Cancelled vanilla music call since custom music object was found!");

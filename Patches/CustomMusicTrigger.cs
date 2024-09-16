@@ -10,8 +10,8 @@ namespace LevelMusicLib.Patches;
 public class CustomMusicTrigger
 {
     [HarmonyPatch("PlayTimeMusicDelayed")]
-    [HarmonyPostfix]
-    private static void PlayTimeMusicDelayedPatch(TimeOfDay __instance)
+    [HarmonyPrefix]
+    private static bool PlayTimeMusicDelayedPatch(TimeOfDay __instance)
     {
 
         CustomLevelMusic CustomMusicObject = GameObject.FindObjectOfType<CustomLevelMusic>();
@@ -20,7 +20,7 @@ public class CustomMusicTrigger
         if (CustomMusicObject == null)
         {
             LevelMusicLib.Logger.LogInfo("CustomMusicObject was null, skipping!");
-            return;
+            return true;
         }
 
 
@@ -33,6 +33,7 @@ public class CustomMusicTrigger
                 if (UnityEngine.Random.Range(0,100) < CustomMusicObject.MusicChance || ES3.Load("TimesLanded", "LCGeneralSaveData", 0) <= 1) // Play music if threshold is met or is players first few times landing
                 {
                     PlayCustomMusic(CustomMusicObject,OutsideMusicSource,__instance.dayMode >= DayMode.Sundown);
+                    if (CustomMusicObject.DisableTimeOfDayStingers == true) return false;
                 }
             }
 
@@ -40,6 +41,7 @@ public class CustomMusicTrigger
         } else { // INVALID OBJECT
             LevelMusicLib.Logger.LogError($"The OutsideMusic gameobject found was of another scene [{OutsideMusicObject.scene.name}] please verify that the moon doesn't have another identically named object!");
         }
+        return true;
     }
 
     public static void PlayCustomMusic(CustomLevelMusic CustomMusicObject, AudioSource MusicSource, bool EveningMusic)
