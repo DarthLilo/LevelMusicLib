@@ -1,3 +1,6 @@
+# 1.0.2
+- Fixed random song selection repeating the same song
+
 # 1.0.1
 - Removed unneeded log
 - Added a new option to the script to disable the vanilla Time Of Day stingers if they overlap with your music
