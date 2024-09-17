@@ -9,6 +9,9 @@ namespace LevelMusicLib.Patches;
 [HarmonyPatch(typeof(TimeOfDay))]
 public class CustomMusicTrigger
 {
+
+    public static int CustomSongOffset = 0;
+
     [HarmonyPatch("PlayTimeMusicDelayed")]
     [HarmonyPrefix]
     private static bool PlayTimeMusicDelayedPatch(TimeOfDay __instance)
@@ -44,6 +47,13 @@ public class CustomMusicTrigger
         return true;
     }
 
+    [HarmonyPatch("OnDayChanged")]
+    [HarmonyPostfix]
+    private static void ResetCustomSongOffset(TimeOfDay __instance)
+    {
+        CustomSongOffset = 0;
+    }
+
     public static void PlayCustomMusic(CustomLevelMusic CustomMusicObject, AudioSource MusicSource, bool EveningMusic)
     {
         if (SoundManager.Instance.timeSincePlayingLastMusic < 200f) return;
@@ -66,7 +76,7 @@ public class CustomMusicTrigger
     public static AudioClip ChooseWeightedClip(NewMusicEntry[] Musics)
     {
         List<AudioClip> WeightedClips = [];
-        System.Random random = new(StartOfRound.Instance.randomMapSeed);
+        System.Random random = new(StartOfRound.Instance.randomMapSeed + CustomSongOffset);
 
         foreach(var song in Musics)
         {
@@ -75,6 +85,8 @@ public class CustomMusicTrigger
                 WeightedClips.Add(song.clip);
             }
         }
+
+        CustomSongOffset++;
 
         return WeightedClips[random.Next(WeightedClips.Count)];
 
